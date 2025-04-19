@@ -3,8 +3,6 @@
 #include "himfs_d.h"
 #endif
 
-struct himfs_inode_info* HIMFS_I(struct inode * inode);
-
 unsigned int BKDRHash(char *str, int len);
 uint32_t murmurHash3(uint32_t key1, const char* key2, int len);
 
