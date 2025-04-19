@@ -121,7 +121,7 @@ static inline struct himfs_sb_info *HIMFS_SB(struct super_block *sb)
 	return sb->s_fs_info; //文件系统特殊信息
 }
 
-struct himfs_inode_info *FFS_I(struct inode *inode)
+struct himfs_inode_info *HIMFS_I(struct inode *inode)
 {
 	return container_of(inode, struct himfs_inode_info, vfs_inode);
 }
