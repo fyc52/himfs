@@ -1,0 +1,1 @@
+savedcmd_/home/fengyicun/flatfs/himfs/himfs.mod := printf '%s\n'   super.o inode.o file.o hash.o | awk '!x[$$0]++ { print("/home/fengyicun/flatfs/himfs/"$$0) }' > /home/fengyicun/flatfs/himfs/himfs.mod

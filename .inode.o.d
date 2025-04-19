@@ -1,4 +1,4 @@
-inode.o: /home/fengyicun/flatfs/flatfs/inode.c \
+inode.o: /home/fengyicun/flatfs/himfs/inode.c \
  include/linux/compiler-version.h include/linux/kconfig.h \
  include/generated/autoconf.h include/linux/compiler_types.h \
  include/linux/compiler_attributes.h include/linux/compiler-gcc.h \
@@ -289,6 +289,6 @@ inode.o: /home/fengyicun/flatfs/flatfs/inode.c \
  include/linux/kthread.h include/linux/cgroup_subsys.h \
  include/linux/cgroup_refcnt.h include/linux/bio.h \
  include/linux/mempool.h include/linux/uio.h include/uapi/linux/uio.h \
- /home/fengyicun/flatfs/flatfs/himfs_d.h include/linux/fscache.h \
+ /home/fengyicun/flatfs/himfs/himfs_d.h include/linux/fscache.h \
  include/linux/netfs.h include/linux/list_sort.h \
- /home/fengyicun/flatfs/flatfs/hash.h
+ /home/fengyicun/flatfs/himfs/hash.h

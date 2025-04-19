@@ -187,8 +187,8 @@ unsigned int hash_insert(struct inode *inode, struct inode *dir, struct dentry *
     him_inode->i_uid = (uint16_t)__kuid_val(inode->i_uid);
     him_inode->i_gid = (uint16_t)__kgid_val(inode->i_gid);
     him_inode->i_size = 0;
-    him_inode->i_ctime = inode->i_ctime;
-    him_inode->i_mtime = inode->i_mtime;
+    // him_inode->i_ctime = inode->i_ctime;
+    // him_inode->i_mtime = inode->i_mtime;
     him_inode->i_crtime = hii->i_crtime;
     him_inode->i_detime = 0;
 	him_inode->filename.name_len = dentry->d_name.len;
@@ -223,9 +223,9 @@ static void grave_sync(struct super_block *sb, struct grave *grave)
 
 	for (i = 0; i < GRAVE_NUM; ++i)
 	{
-		himfs_ino.ino = him_inode->i_pid;
+		himfs_ino.raw_ino = him_inode->i_pid;
 		lba = himfs_ino.ino.hash_key;
-		buffer = sb_sbread(sb, lba);
+		buffer = sb_bread(sb, lba);
 	
 		meta_block = (struct himfs_meta_block*)buffer->b_data;
 		idx = himfs_ino.ino.slot;
@@ -271,7 +271,7 @@ bool hash_update(struct inode *dir, struct dentry *dentry, struct inode_context 
 	{
 		if (test_bit(idx, meta_block->slot_bitmap))
 		{
-			him_inode = meta_block->himfs_inode[idx];
+			him_inode = &meta_block->himfs_inode[idx];
 			if (strcmp(him_inode->filename.name, dentry->d_name.name) == 0)
 			{
 				break;
@@ -292,13 +292,13 @@ bool hash_update(struct inode *dir, struct dentry *dentry, struct inode_context 
 			if (him_inode->i_grave[i].pid == 0)
 			{
 				him_inode->i_grave[i].pid = him_inode->i_pid;
-				ctx->inode->i_detime = him_inode->i_detime = him_inode->i_grave[i].detime = current_time(ctx->inode);
+				// ctx->inode->i_detime = him_inode->i_detime = him_inode->i_grave[i].detime = current_time(ctx->inode);
 			}
 		}
 
 		if (i >= GRAVE_NUM - 1)
 		{
-			grave_sync(dir->i_sb, &him_inode->i_grave);
+			// grave_sync(dir->i_sb, &him_inode->i_grave);
 			for (i = 0; i < GRAVE_NUM; ++i)
 			{
 				him_inode->i_grave[i].pid = 0;
