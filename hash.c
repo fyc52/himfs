@@ -240,7 +240,7 @@ static void grave_sync(struct super_block *sb, struct grave *grave)
 	}
 }
 
-bool hash_update(struct inode *dir, struct dentry *dentry, struct *ctx)
+bool hash_update(struct inode *dir, struct dentry *dentry, struct inode_context *ctx)
 {
 	lba_t lba;
 	struct buffer_head *buffer;
@@ -258,13 +258,13 @@ bool hash_update(struct inode *dir, struct dentry *dentry, struct *ctx)
 
 	buffer = sb_sbread(dir->i_sb, lba);
 
-	if (unlikely(!bh))
+	if (unlikely(!buffer))
 	{
 		printk(KERN_ERR "allocate bh for himfs_inode fail");
 		return false;
 	}
 
-	meta_block = (struct himfs_meta_block*)bh->b_data;
+	meta_block = (struct himfs_meta_block*)buffer->b_data;
 
 	for (idx = 0; idx < HASH_SLOT_NUM; ++idx)
 	{
@@ -300,7 +300,7 @@ bool hash_update(struct inode *dir, struct dentry *dentry, struct *ctx)
 			grave_sync(dir->i_sb, &him_inode->i_grave);
 			for (i = 0; i < GRAVE_NUM; ++i)
 			{
-				him_inode->i_grave[i].pid = 0
+				him_inode->i_grave[i].pid = 0;
 			}
 		}
 		
