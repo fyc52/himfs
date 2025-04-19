@@ -257,7 +257,7 @@ bool hash_update(struct inode *dir, struct dentry *dentry, struct inode_context 
 		lba = META_REGIN_START_LBA;
 	}
 
-	buffer = sb_sbread(dir->i_sb, lba);
+	buffer = sb_bread(dir->i_sb, lba);
 
 	if (unlikely(!buffer))
 	{
