@@ -49,9 +49,10 @@ uint32_t murmurHash3(uint32_t key1, const char* key2, int len)
 
     const uint32_t c1 = 0xcc9e2d51;
     const uint32_t c2 = 0x1b873593;
+	int i;
 
     // 处理每4字节块
-    for (int i = 0; i < nblocks; i++) {
+    for (i = 0; i < nblocks; i++) {
         uint32_t k1 = *(uint32_t *)(data + i * 4);
 
         k1 *= c1;
@@ -99,13 +100,13 @@ struct buffer_head* hash_get(struct inode *dir, struct dentry *dentry, int *idx)
 	struct himfs_inode *him_inode;
 
 	lba = murmurHash3(dir->i_ino, dentry->d_name.name, dentry->d_name.len);
-	lba % = META_REGIN_END_LBA;
+	lba %= META_REGIN_END_LBA;
 	if (lba < META_REGIN_START_LBA) 
 	{
 		lba = META_REGIN_START_LBA;
 	}
 
-	buffer = sb_sbread(dir->i_sb, lba);
+	buffer = sb_bread(dir->i_sb, lba);
 
 	if (unlikely(!buffer))
 	{
@@ -113,14 +114,14 @@ struct buffer_head* hash_get(struct inode *dir, struct dentry *dentry, int *idx)
 		return NULL;
 	}
 
-	meta_block = (struct himfs_meta_block*)bh->b_data;
+	meta_block = (struct himfs_meta_block*)buffer->b_data;
 
 	for (*idx = 0; *idx < HASH_SLOT_NUM; ++(*idx))
 	{
 		if (test_bit(*idx, meta_block->slot_bitmap))
 		{
 			him_inode = meta_block->himfs_inode[*idx];
-			if (strcmp(him_inode->filename.name, dentry->dname.name) == 0)
+			if (strcmp(him_inode->filename.name, dentry->d_name.name) == 0)
 			{
 				break;
 			}
@@ -147,7 +148,7 @@ unsigned int hash_insert(struct inode *inode, struct inode *dir, struct dentry *
 	int i;
 
 	lba = murmurHash3(dir->i_ino, dentry->d_name.name, dentry->d_name.len);
-	lba % = META_REGIN_END_LBA;
+	lba %= META_REGIN_END_LBA;
 	if (lba < META_REGIN_START_LBA) 
 	{
 		lba = META_REGIN_START_LBA;
@@ -155,13 +156,13 @@ unsigned int hash_insert(struct inode *inode, struct inode *dir, struct dentry *
 
 	buffer = sb_sbread(dir->i_sb, lba);
 
-	if (unlikely(!bh))
+	if (unlikely(!buffer))
 	{
 		printk(KERN_ERR "allocate bh for himfs_inode fail");
 		return 0;
 	}
 
-	meta_block = (struct himfs_meta_block*)bh->b_data;
+	meta_block = (struct himfs_meta_block*)buffer->b_data;
 
 	for (idx = 0; idx < HASH_SLOT_NUM; ++idx)
 	{
@@ -182,7 +183,7 @@ unsigned int hash_insert(struct inode *inode, struct inode *dir, struct dentry *
 	him_inode->i_mode = mode;
 	himfs_ino.ino.slot = idx;
     himfs_ino.ino.hash_key = lba;
-    him_inode->i_ino = him_ino.ino;	 
+    him_inode->i_ino = himfs_ino.ino;	 
     him_inode->i_uid = (uint16_t)__kuid_val(inode->i_uid);
     him_inode->i_gid = (uint16_t)__kgid_val(inode->i_gid);
     him_inode->i_size = 0;
@@ -202,7 +203,7 @@ unsigned int hash_insert(struct inode *inode, struct inode *dir, struct dentry *
 	}
 	set_bit(idx, meta_block->slot_bitmap);
 
-	set_buffer_uptodate(bh);//表示可以回写
+	set_buffer_uptodate(buffer);//表示可以回写
 	mark_buffer_dirty(buffer);
 	brelse(buffer);
 
@@ -226,7 +227,7 @@ static void grave_sync(struct super_block *sb, struct grave *grave)
 		lba = himfs_ino.ino.hash_key;
 		buffer = sb_sbread(sb, lba);
 	
-		meta_block = (struct himfs_meta_block*)bh->b_data;
+		meta_block = (struct himfs_meta_block*)buffer->b_data;
 		idx = himfs_ino.ino.slot;
 		him_inode = meta_block->himfs_inode[idx];
 
