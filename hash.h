@@ -6,7 +6,7 @@
 struct himfs_inode_info* HIMFS_I(struct inode * inode);
 
 unsigned int BKDRHash(char *str, int len);
-uint32_t murmurHash3(char *str, int len);
+uint32_t murmurHash3(uint32_t key1, const char* key2, int len) 
 
 struct buffer_head* hash_get(struct inode *dir, struct dentry *dentry, int *idx);
 unsigned int hash_insert(struct inode *inode, struct inode *dir, struct dentry *dentry, umode_t mode);

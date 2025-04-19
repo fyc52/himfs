@@ -120,7 +120,7 @@ struct buffer_head* hash_get(struct inode *dir, struct dentry *dentry, int *idx)
 	{
 		if (test_bit(*idx, meta_block->slot_bitmap))
 		{
-			him_inode = meta_block->himfs_inode[*idx];
+			him_inode = &meta_block->himfs_inode[*idx];
 			if (strcmp(him_inode->filename.name, dentry->d_name.name) == 0)
 			{
 				break;
@@ -154,7 +154,7 @@ unsigned int hash_insert(struct inode *inode, struct inode *dir, struct dentry *
 		lba = META_REGIN_START_LBA;
 	}
 
-	buffer = sb_sbread(dir->i_sb, lba);
+	buffer = sb_bread(dir->i_sb, lba);
 
 	if (unlikely(!buffer))
 	{
@@ -179,11 +179,11 @@ unsigned int hash_insert(struct inode *inode, struct inode *dir, struct dentry *
 		return 0;
 	}
 
-	him_inode = meta_block->himfs_inode[idx];
+	him_inode = &meta_block->himfs_inode[idx];
 	him_inode->i_mode = mode;
 	himfs_ino.ino.slot = idx;
     himfs_ino.ino.hash_key = lba;
-    him_inode->i_ino = himfs_ino.ino;	 
+    him_inode->i_ino = himfs_ino.raw_ino;	 
     him_inode->i_uid = (uint16_t)__kuid_val(inode->i_uid);
     him_inode->i_gid = (uint16_t)__kgid_val(inode->i_gid);
     him_inode->i_size = 0;
@@ -229,7 +229,7 @@ static void grave_sync(struct super_block *sb, struct grave *grave)
 	
 		meta_block = (struct himfs_meta_block*)buffer->b_data;
 		idx = himfs_ino.ino.slot;
-		him_inode = meta_block->himfs_inode[idx];
+		him_inode = &meta_block->himfs_inode[idx];
 
 		detime = him_inode->i_grave[i].detime;
 		him_inode->i_ctime = him_inode->i_mtime = detime;
@@ -251,7 +251,7 @@ bool hash_update(struct inode *dir, struct dentry *dentry, struct inode_context 
 	int i;
 
 	lba = murmurHash3(dir->i_ino, dentry->d_name.name, dentry->d_name.len);
-	lba % = META_REGIN_END_LBA;
+	lba %= META_REGIN_END_LBA;
 	if (lba < META_REGIN_START_LBA) 
 	{
 		lba = META_REGIN_START_LBA;
@@ -272,7 +272,7 @@ bool hash_update(struct inode *dir, struct dentry *dentry, struct inode_context 
 		if (test_bit(idx, meta_block->slot_bitmap))
 		{
 			him_inode = meta_block->himfs_inode[idx];
-			if (strcmp(him_inode->filename.name, dentry->dname.name) == 0)
+			if (strcmp(him_inode->filename.name, dentry->d_name.name) == 0)
 			{
 				break;
 			}
@@ -306,7 +306,7 @@ bool hash_update(struct inode *dir, struct dentry *dentry, struct inode_context 
 		}
 		
 		clear_bit(idx, meta_block->slot_bitmap);
-		set_buffer_uptodate(bh);//表示可以回写
+		set_buffer_uptodate(buffer);//表示可以回写
 		mark_buffer_dirty(buffer);
 	}
 	else
